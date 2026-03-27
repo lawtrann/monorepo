@@ -20,6 +20,10 @@ Created `pkg/goshared/repo/reflect.go` with:
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/26
+
 ## Next
 
 Task 2.6 is next — BaseRepo[R, ID] using Pool interface (depends on 2.1, 2.2, 2.4, 2.5 — all now passing).
