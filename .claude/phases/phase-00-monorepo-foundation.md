@@ -57,7 +57,17 @@ monorepo/
 ```
 
 ### go.work
+Task 0.2 creates `go.work` with only `./pkg/goshared`. Tasks 0.3 and 0.4 each add their module via `go work use ./app/mastermgmt` and `go work use ./app/eureka`.
+
 ```go
+// After task 0.2:
+go 1.24
+
+use (
+    ./pkg/goshared
+)
+
+// After tasks 0.3 and 0.4, final state:
 go 1.24
 
 use (
