@@ -1,0 +1,9 @@
+# casdoor local configuration
+# Placeholder — real Casdoor config (app.conf) created in task 1.2
+casdoor:
+  port: 8000
+db:
+  host: localhost
+  port: 5432
+  name: monorepo
+  schema: casdoor
