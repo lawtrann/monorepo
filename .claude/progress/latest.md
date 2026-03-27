@@ -1,28 +1,25 @@
-# Session 22
+# Session 23
 
 Date: 2026-03-27
-Task: 2.4 — Create pkg/goshared/repo/filter.go — ListFilter + Page[T]
+Task: 2.5 — Create pkg/goshared/repo/reflect.go — structToColumnsAndValues + field mapping
 Phase: 2
 Status: COMPLETED
 
 ## Summary
 
-Created `pkg/goshared/repo/filter.go` with:
-- `ListFilter` struct: Cursor (*uuid.UUID), Limit (int32), Offset (*int32), PageSize (int32), SortBy (string), SortOrder (string "ASC"|"DESC")
-- `Page[T any]` generic struct: Items ([]T), NextCursor (*uuid.UUID), Total (*int64)
+Created `pkg/goshared/repo/reflect.go` with:
+- `structToColumnsAndValues(row any)` — reads `db:"col"` tags, skips tenant/created_at/updated_at/deleted_at
+- `fieldToColumn(row any, goFieldName string) (string, bool)` — maps Go struct field name → db column name
+- `fieldsToColumns(row any, goFieldNames []string) []string` — batch conversion for UpdateFields mask
 
 ## Commits
 
-- 9179bbc: feat(repo): create ListFilter and Page[T] structs [task 2.4]
+- 3211c82: feat(repo): add structToColumnsAndValues and field mapping utils [task 2.5]
 
 ## Infra state
 
 No infrastructure needed. Docker services not running.
 
-## PR
-
-- https://github.com/lawtrann/monorepo/pull/25
-
 ## Next
 
-Task 2.5 is next (pkg/goshared/repo/reflect.go — structToColumnsAndValues + field mapping). Task 2.5 also has no blocking dependencies.
+Task 2.6 is next — BaseRepo[R, ID] using Pool interface (depends on 2.1, 2.2, 2.4, 2.5 — all now passing).
