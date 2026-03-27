@@ -20,6 +20,10 @@ Status: COMPLETED
 
 Docker Compose brought down after verify. Services: db (postgres:18) on port 5433, casdoor on port 8000 — ready to start.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/20
+
 ## Next
 
 Task 1.7 (verify-jwt.sh: seed → login → decode JWT → confirm claims) is next in dependency order.
