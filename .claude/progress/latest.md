@@ -19,6 +19,10 @@ Created `pkg/goshared/repo/filter.go` with:
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/25
+
 ## Next
 
 Task 2.5 is next (pkg/goshared/repo/reflect.go — structToColumnsAndValues + field mapping). Task 2.5 also has no blocking dependencies.
