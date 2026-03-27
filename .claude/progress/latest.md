@@ -1,25 +1,26 @@
-# Session 2
+# Session 3
 Date: 2026-03-27
-Task: 0.2 — Create go.work (with only ./pkg/goshared initially) and pkg/goshared/go.mod with pinned common deps
+Task: 0.3 — Create app/mastermgmt/ Go module — go.mod imports pkg/goshared, cmd/server/main.go + cmd/worker/main.go stubs, add to go.work via go work use
 Phase: 0
 Status: COMPLETED
 
 ## Summary
-Created the Go workspace and shared library module:
-- `go.work` at repo root with `./pkg/goshared` as the only workspace member
-- `pkg/goshared/go.mod` with all pinned dependencies from the phase spec (connectrpc, pgx, fx, viper, jwx, minio, franz-go, testify, uuid, protobuf)
-- `pkg/goshared/goshared.go` package declaration so the module builds
-- Some versions bumped from spec (testify v1.11.1, protobuf v1.36.11) due to transitive dependency requirements
+Created the mastermgmt Go module:
+- `app/mastermgmt/go.mod` with module path `github.com/lawtrann/monorepo/app/mastermgmt`
+- `app/mastermgmt/cmd/server/main.go` stub
+- `app/mastermgmt/cmd/worker/main.go` stub
+- Added to `go.work` via `go work use`
+- No explicit `require goshared` in go.mod yet — the workspace handles resolution when actual imports are added later
 
 ## Commits
-- b055357: feat(go-modules): create go.work and pkg/goshared/go.mod with pinned deps [task 0.2]
-- ae3dd33: docs: rotate session progress and start task 0.2
+- 6007a21: feat(go-modules): create app/mastermgmt Go module with cmd stubs [task 0.3]
+- 15635be: docs: rotate session progress and start task 0.3
 
 ## PR
-- https://github.com/lawtrann/monorepo/pull/5
+- https://github.com/lawtrann/monorepo/pull/6
 
 ## Infra state
 No infrastructure yet.
 
 ## Next
-Tasks 0.3 and 0.4 are next (both depend only on 0.2) — Go modules for mastermgmt and eureka.
+Task 0.4 (app/eureka Go module) is next — same pattern as this task.
