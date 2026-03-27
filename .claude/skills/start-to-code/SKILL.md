@@ -182,11 +182,11 @@ Task {next_id} is next in dependency order (informational only).
    ```bash
    gh pr create --base develop --title "feat({scope}): {task.description}" --body "Task {id} from phase {phase}. Verify: \`{verify}\`"
    ```
-5. Add the PR URL to `latest.md` under a `## PR` section and amend the progress commit:
+5. Add the PR URL to `latest.md` under a `## PR` section, then commit and push:
    ```bash
    git add .claude/progress/latest.md
-   git commit --amend --no-edit
-   git push --force-with-lease
+   git commit -m "docs: add PR URL to session progress [task {id}]"
+   git push
    ```
 
 ## Important rules
