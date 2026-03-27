@@ -1,23 +1,15 @@
-# Session 8
+# Session 9
 Date: 2026-03-27
-Task: 0.8 — Add make setup target installing Buf, sqlc, air via go install, SOPS + age via brew
+Task: 0.9 — Generate age key (gitignored), create .sops.yaml, encrypt initial secrets.yaml per app in deployment/*/local/
 Phase: 0
-Status: COMPLETED
+Status: IN_PROGRESS
 
-## Summary
-Replaced placeholder `setup` target in Makefile with actual tool installation commands:
-- `go install` for buf, sqlc, air
-- `brew install` for sops, age
-
-## Commits
-- 9c6214a: docs: rotate session progress and start task 0.8
-- 2a0ec3d: feat(tooling): add make setup target for buf, sqlc, air, sops, age [task 0.8]
-
-## PR
-- (pending)
+## Plan
+1. Generate an age key pair, save to `.age-key.txt` (already gitignored)
+2. Create `.sops.yaml` with creation rules targeting `deployment/*/local/secrets.yaml`
+3. Create plaintext secrets.yaml templates for mastermgmt, eureka, casdoor
+4. Encrypt each with `sops --encrypt --in-place`
+5. Verify: `sops -d deployment/mastermgmt/local/secrets.yaml > /dev/null`
 
 ## Infra state
 No infrastructure yet.
-
-## Next
-Task 0.9 (SOPS + age key setup) depends on 0.8 and is next in dependency order.
