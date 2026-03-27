@@ -1,21 +1,14 @@
-# Session 6
+# Session 7
 Date: 2026-03-27
-Task: 0.5 — Create empty app/mastermgmt/migration/ and app/eureka/migration/ dirs with .gitkeep
+Task: 0.6 — Create app/mastermgmt/proto/ and app/eureka/proto/ with buf.yaml, buf.gen.yaml, and placeholder health.proto
 Phase: 0
-Status: COMPLETED
+Status: IN_PROGRESS
 
-## Summary
-Created empty migration directories with .gitkeep files for both services. Alembic setup deferred to Phase 1.
-
-## Commits
-- 218f1ab: docs: rotate session progress and start task 0.5
-- 7623175: feat(migration): create empty migration dirs with .gitkeep [task 0.5]
-
-## PR
-- https://github.com/lawtrann/monorepo/pull/9
+## Plan
+1. Create proto directory structure for both services
+2. Add buf.yaml (v2, STANDARD lint, FILE breaking) per service
+3. Add buf.gen.yaml per service
+4. Add placeholder health.proto (mastermgmt/v1 and eureka/v1 packages)
 
 ## Infra state
 No infrastructure yet.
-
-## Next
-Task 0.6 (proto dirs with buf.yaml, buf.gen.yaml, health.proto) is next in dependency order.
