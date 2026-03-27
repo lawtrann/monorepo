@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package mastermgmt.v1;
+
+message CheckRequest {}
+
+message CheckResponse {
+  string status = 1;
+}
+
+service HealthService {
+  rpc Check(CheckRequest) returns (CheckResponse) {}
+}
