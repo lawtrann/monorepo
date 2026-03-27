@@ -1,23 +1,21 @@
-# Session 9
+# Session 10
 Date: 2026-03-27
-Task: 0.9 — Generate age key (gitignored), create .sops.yaml, encrypt initial secrets.yaml per app in deployment/*/local/
+Task: 0.10 — Create app/web/ with README.md and .gitkeep
 Phase: 0
 Status: COMPLETED
 
 ## Summary
-- Generated age key pair to `.age-key.txt` (gitignored)
-- Created `.sops.yaml` with creation rule matching `deployment/*/local/secrets.yaml` using the age public key
-- Created and encrypted `secrets.yaml` for mastermgmt (db password + jwt secret), eureka (db password + jwt secret), and casdoor (db password)
-- Verified decryption works with `sops -d`
+- Created `app/web/` directory with `README.md` placeholder and `.gitkeep`
+- Verify command `test -f app/web/README.md` passes
 
 ## Commits
-- 7c4ad64: feat(sops): generate age key, create .sops.yaml, encrypt secrets.yaml per app [task 0.9]
+- 289d480: feat(web): create app/web/ placeholder with README.md and .gitkeep [task 0.10]
 
 ## PR
-- https://github.com/lawtrann/monorepo/pull/12
+- https://github.com/lawtrann/monorepo/pull/13
 
 ## Infra state
 No infrastructure yet.
 
 ## Next
-Task 0.10 (app/web/ placeholder) and 0.11 (buf lint verification) are next in dependency order.
+Task 0.11 (buf lint verification) is next in dependency order for phase 0.
