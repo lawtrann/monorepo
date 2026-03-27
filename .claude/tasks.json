@@ -196,7 +196,7 @@
     ],
     "verify": "cd app/mastermgmt/migration && docker compose -f ../../../docker-compose.yml up -d db && sleep 3 && uv sync && uv run alembic check && docker compose -f ../../../docker-compose.yml down",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "1.5",
