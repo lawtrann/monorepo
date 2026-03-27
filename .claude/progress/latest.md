@@ -27,6 +27,10 @@ All methods use pool.Query/QueryRow/Exec (interface, not concrete). pgx.CollectO
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/27
+
 ## Next
 
 Task 2.7 is next — MappedRepo[E, R, ID] wrapping BaseRepo with toDomain/toRow translation.
