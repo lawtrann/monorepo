@@ -68,8 +68,8 @@ This file contains: decisions, code patterns, verification commands, and skill h
 
 **First, sync with develop:**
 ```bash
+git fetch origin develop:develop
 git checkout develop
-git pull origin develop
 ```
 
 **Check for clean working tree:**
