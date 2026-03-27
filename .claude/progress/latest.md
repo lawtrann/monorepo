@@ -1,25 +1,22 @@
-# Session 14
+# Session 15
 Date: 2026-03-27
-Task: 1.3 — Create docker-compose.yml with db (postgres:18) + casdoor services, healthchecks, and volume mounts
+Task: 1.4 — Create Alembic SQL-first setup for app/mastermgmt/migration/
 Phase: 1
 Status: COMPLETED
 
 ## Summary
-- Created `docker-compose.yml` with postgres:18 (db) and casdoor:v1.777.0 services
-- Fixed app.conf to use postgres superuser — Casdoor's xorm panics with custom search_path (casdoor schema)
-- Pinned casdoor to v1.777.0; latest (2.370.0) has same index creation bug
-- Host port mapped as 5433:5432 to avoid conflict with existing SSH tunnel on 5432
-- Verified: `docker compose up -d`, curl casdoor on :8000, `docker compose down` — all pass
+- Created Alembic SQL-first setup in app/mastermgmt/migration/
+- alembic.ini with post-write hook that auto-creates upgrade/downgrade SQL stubs
+- env.py sets search_path to mastermgmt schema, builds DB URL from env vars (default port 5433 matching docker-compose)
+- Used MetaData(schema=SCHEMA) + include_schemas/include_name filter so `alembic check` works with SQL-first (no models)
+- script.py.mako reads SQL files from migrations/sql/ directory
+- pyproject.toml with alembic + psycopg2-binary, managed by uv
 
 ## Commits
-- 8bd376e: fix(casdoor): use postgres user in app.conf — Casdoor xorm panics with custom search_path
-- efffb59: feat(docker): create docker-compose.yml with db + casdoor services [task 1.3]
+- 90f65a7: feat(migration): create Alembic SQL-first setup for mastermgmt [task 1.4]
 
 ## Infra state
 Docker Compose ready with db (postgres:18) on port 5433 and casdoor on port 8000. Not currently running (brought down after verify).
 
-## PR
-- https://github.com/lawtrann/monorepo/pull/17
-
 ## Next
-Task 1.4 (Alembic SQL-first setup for mastermgmt) is next in dependency order.
+Task 1.5 (Alembic SQL-first setup for eureka) is next in dependency order.
