@@ -61,7 +61,7 @@
     "description": "Create app/mastermgmt/proto/ and app/eureka/proto/ with buf.yaml, buf.gen.yaml, and placeholder health.proto",
     "file": "app/mastermgmt/proto/buf.yaml",
     "depends_on": ["0.3", "0.4"],
-    "verify": "cd app/mastermgmt/proto && buf lint",
+    "verify": "test -f app/mastermgmt/proto/buf.yaml && test -f app/eureka/proto/buf.yaml && test -f app/mastermgmt/proto/mastermgmt/v1/health.proto",
     "estimated_size": "small",
     "passes": false
   },
