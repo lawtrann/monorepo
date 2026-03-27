@@ -22,6 +22,10 @@ Follows the exact pattern from the phase file.
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/23
+
 ## Next
 
 Task 2.3 (pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface) is next in dependency order.
