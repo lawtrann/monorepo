@@ -1,6 +1,7 @@
 go 1.24.13
 
 use (
+	./app/eureka
 	./app/mastermgmt
 	./pkg/goshared
 )
