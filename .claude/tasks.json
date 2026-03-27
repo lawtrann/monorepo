@@ -128,7 +128,7 @@
     ],
     "verify": "test -f app/web/README.md",
     "estimated_size": "small",
-    "passes": false
+    "passes": true
   },
   {
     "id": "0.11",
