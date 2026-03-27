@@ -1,23 +1,15 @@
-# Session 1
+# Session 2
 Date: 2026-03-27
-Task: 0.1 — Create root .gitignore, README.md, root Makefile with setup target placeholder
+Task: 0.2 — Create go.work (with only ./pkg/goshared initially) and pkg/goshared/go.mod with pinned common deps
 Phase: 0
-Status: COMPLETED
+Status: IN_PROGRESS
 
-## Summary
-Created three root files for the monorepo scaffold:
-- `.gitignore` — expanded from minimal template to include age keys, Go, Python, IDE, OS, env, and dependency patterns
-- `README.md` — replaced template README with project-specific overview and structure
-- `Makefile` — new file with setup target placeholder (full implementation in task 0.8)
-
-## Commits
-- e1f3955: feat(scaffold): create root .gitignore, README.md, Makefile [task 0.1]
-
-## PR
-- https://github.com/lawtrann/monorepo/pull/4
+## Plan
+1. Create `pkg/goshared/go.mod` with module name and pinned dependencies from phase file
+2. Run `go mod tidy` in pkg/goshared to resolve dependencies
+3. Create `go.work` at repo root with `./pkg/goshared`
+4. Run `go work sync` to verify
+5. Verify: `cd pkg/goshared && go build ./...`
 
 ## Infra state
 No infrastructure yet.
-
-## Next
-Task 0.2 is next in dependency order (go.work + pkg/goshared/go.mod).
