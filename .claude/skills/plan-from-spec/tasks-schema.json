@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for task entries in .claude/tasks.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "phase", "scope", "description", "file", "depends_on", "verify", "estimated_size", "passes"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Phase.subtask format, e.g. '2.3'. Unique across all tasks.",
+        "pattern": "^[0-9]+\\.[0-9]+$"
+      },
+      "phase": {
+        "type": "integer",
+        "description": "Phase number (0-14+). Groups related tasks.",
+        "minimum": 0
+      },
+      "scope": {
+        "type": "string",
+        "description": "Commit scope — short label (1-2 words) for the area this task touches, e.g. 'auth', 'db', 'api'.",
+        "maxLength": 30
+      },
+      "description": {
+        "type": "string",
+        "description": "What to build. One line. Clear enough that a coding agent understands the task without reading the spec.",
+        "maxLength": 200
+      },
+      "file": {
+        "type": "string",
+        "description": "Primary file to create or edit. Relative to repo root.",
+        "examples": ["app/eureka/internal/shared/db/pool.go", "docker-compose.yml"]
+      },
+      "depends_on": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Task IDs that must have passes: true before this task can start. Empty array if no dependencies.",
+        "examples": [["1.1", "1.2"], []]
+      },
+      "verify": {
+        "type": "string",
+        "description": "Shell command to verify task completion. Must be runnable by the coding agent. Exit 0 = pass.",
+        "examples": ["cd app/eureka && go build ./cmd/server/", "cd app/eureka && go test ./internal/shared/db/..."]
+      },
+      "estimated_size": {
+        "type": "string",
+        "enum": ["small", "medium", "large"],
+        "description": "small: <30 min. medium: 30-90 min. large: 90+ min — should be split into smaller tasks."
+      },
+      "passes": {
+        "type": "boolean",
+        "description": "Always false when created. Only CI pipeline changes this to true.",
+        "default": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,266 @@
+name: Task CI
+
+on:
+  push:
+    branches: ['task/**']
+
+permissions:
+  contents: write
+
+jobs:
+  detect:
+    name: Detect stack
+    runs-on: ubuntu-latest
+    outputs:
+      has_go: ${{ steps.detect.outputs.has_go }}
+      has_node: ${{ steps.detect.outputs.has_node }}
+      has_python: ${{ steps.detect.outputs.has_python }}
+      has_proto: ${{ steps.detect.outputs.has_proto }}
+      go_modules: ${{ steps.detect.outputs.go_modules }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: detect
+        name: Detect project stack
+        run: |
+          # Go modules
+          go_mods=$(find . -name "go.mod" -not -path "*/vendor/*" | sort)
+          if [ -n "$go_mods" ]; then
+            echo "has_go=true" >> "$GITHUB_OUTPUT"
+            # JSON array of module directories
+            echo "go_modules=$(echo "$go_mods" | xargs -I{} dirname {} | jq -R -s -c 'split("\n") | map(select(. != ""))')" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_go=false" >> "$GITHUB_OUTPUT"
+            echo "go_modules=[]" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Node
+          if [ -f "package.json" ] || find . -name "package.json" -maxdepth 3 -not -path "*/node_modules/*" | grep -q .; then
+            echo "has_node=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_node=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Python
+          if find . -name "pyproject.toml" -o -name "requirements.txt" | grep -q .; then
+            echo "has_python=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_python=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          # Proto (buf)
+          if find . -name "buf.yaml" | grep -q .; then
+            echo "has_proto=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_proto=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  go:
+    name: Go checks
+    needs: detect
+    if: needs.detect.outputs.has_go == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ fromJson(needs.detect.outputs.go_modules)[0] }}/go.mod
+
+      - name: Build all modules
+        run: |
+          modules='${{ needs.detect.outputs.go_modules }}'
+          echo "$modules" | jq -r '.[]' | while read -r dir; do
+            echo "::group::Build $dir"
+            cd "$GITHUB_WORKSPACE/$dir"
+            go build ./...
+            echo "::endgroup::"
+          done
+
+      - name: Test all modules
+        run: |
+          modules='${{ needs.detect.outputs.go_modules }}'
+          echo "$modules" | jq -r '.[]' | while read -r dir; do
+            # Only test if test files exist
+            if find "$GITHUB_WORKSPACE/$dir" -name "*_test.go" | grep -q .; then
+              echo "::group::Test $dir"
+              cd "$GITHUB_WORKSPACE/$dir"
+              go test ./... -count=1 -timeout=300s
+              echo "::endgroup::"
+            else
+              echo "No test files in $dir — skipping"
+            fi
+          done
+
+      - name: Integration tests (testcontainers)
+        run: |
+          modules='${{ needs.detect.outputs.go_modules }}'
+          echo "$modules" | jq -r '.[]' | while read -r dir; do
+            # Only run if integration test files exist
+            if grep -rl '//go:build integration' "$GITHUB_WORKSPACE/$dir" 2>/dev/null | grep -q .; then
+              echo "::group::Integration test $dir"
+              cd "$GITHUB_WORKSPACE/$dir"
+              go test -tags=integration ./... -count=1 -timeout=600s
+              echo "::endgroup::"
+            else
+              echo "No integration tests in $dir — skipping"
+            fi
+          done
+
+      - name: Vet all modules
+        run: |
+          modules='${{ needs.detect.outputs.go_modules }}'
+          echo "$modules" | jq -r '.[]' | while read -r dir; do
+            echo "::group::Vet $dir"
+            cd "$GITHUB_WORKSPACE/$dir"
+            go vet ./...
+            echo "::endgroup::"
+          done
+
+      - name: Lint all modules
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: ${{ fromJson(needs.detect.outputs.go_modules)[0] }}
+          args: --timeout=5m
+
+  node:
+    name: Node checks
+    needs: detect
+    if: needs.detect.outputs.has_node == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install and lint
+        run: |
+          find . -name "package.json" -maxdepth 3 -not -path "*/node_modules/*" | while read -r pkg; do
+            dir=$(dirname "$pkg")
+            echo "::group::Node checks in $dir"
+            cd "$GITHUB_WORKSPACE/$dir"
+            pnpm install --frozen-lockfile
+            if grep -q '"lint"' package.json; then
+              pnpm run lint
+            fi
+            echo "::endgroup::"
+          done
+
+  python:
+    name: Python checks
+    needs: detect
+    if: needs.detect.outputs.has_python == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Check Python projects
+        run: |
+          find . -name "pyproject.toml" | while read -r toml; do
+            dir=$(dirname "$toml")
+            echo "::group::Python checks in $dir"
+            cd "$GITHUB_WORKSPACE/$dir"
+            uv sync
+            echo "::endgroup::"
+          done
+
+  proto:
+    name: Proto lint
+    needs: detect
+    if: needs.detect.outputs.has_proto == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+
+      - name: Buf lint
+        run: |
+          find . -name "buf.yaml" | while read -r buf; do
+            dir=$(dirname "$buf")
+            echo "::group::buf lint $dir"
+            cd "$GITHUB_WORKSPACE/$dir"
+            buf lint
+            echo "::endgroup::"
+          done
+
+  mark-passed:
+    name: Mark task passed
+    needs: [detect, go, node, python, proto]
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Parse task ID from branch
+        id: parse
+        run: |
+          branch="${GITHUB_REF_NAME}"
+          # Branch format: task/{id}_{slug}
+          # Extract everything between task/ and first _
+          task_id=$(echo "$branch" | sed -n 's|^task/\([0-9]*\.[0-9]*\)_.*|\1|p')
+          if [ -z "$task_id" ]; then
+            echo "Could not parse task ID from branch: $branch"
+            echo "Expected format: task/{id}_{slug}"
+            exit 1
+          fi
+          echo "task_id=$task_id" >> "$GITHUB_OUTPUT"
+          echo "Parsed task ID: $task_id"
+
+      - name: Mark task as passed in tasks.json
+        run: |
+          task_id="${{ steps.parse.outputs.task_id }}"
+
+          # Check if task exists and is not already passed
+          current=$(jq --arg id "$task_id" '.[] | select(.id == $id) | .passes' .claude/tasks.json)
+
+          if [ "$current" = "true" ]; then
+            echo "Task $task_id is already marked as passed. Skipping."
+            exit 0
+          fi
+
+          if [ -z "$current" ]; then
+            echo "Task $task_id not found in tasks.json. Skipping."
+            exit 0
+          fi
+
+          # Update passes to true
+          jq --arg id "$task_id" '
+            map(if .id == $id then .passes = true else . end)
+          ' .claude/tasks.json > tmp.json && mv tmp.json .claude/tasks.json
+
+          echo "Marked task $task_id as passed"
+
+      - name: Commit and push
+        run: |
+          task_id="${{ steps.parse.outputs.task_id }}"
+
+          # Check if there are changes to commit
+          if git diff --quiet .claude/tasks.json; then
+            echo "No changes to tasks.json. Skipping commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .claude/tasks.json
+          git commit -m "ci: mark task $task_id passed"
+          git push
