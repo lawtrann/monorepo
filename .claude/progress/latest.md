@@ -1,21 +1,22 @@
-# Session 10
+# Session 11
 Date: 2026-03-27
-Task: 0.10 — Create app/web/ with README.md and .gitkeep
+Task: 0.11 — Verify buf lint passes for both services' proto dirs
 Phase: 0
 Status: COMPLETED
 
 ## Summary
-- Created `app/web/` directory with `README.md` placeholder and `.gitkeep`
-- Verify command `test -f app/web/README.md` passes
+- Ran `buf lint` on both `app/mastermgmt/proto` and `app/eureka/proto` — both pass clean
+- Switched buf installation from `go install` to `brew install bufbuild/buf/buf` so the binary is on the standard PATH (`/opt/homebrew/bin`)
+- Consolidated brew installs in the Makefile setup target
 
 ## Commits
-- 289d480: feat(web): create app/web/ placeholder with README.md and .gitkeep [task 0.10]
-
-## PR
-- https://github.com/lawtrann/monorepo/pull/13
+- 2383045: feat(proto): verify buf lint passes for both services [task 0.11]
 
 ## Infra state
 No infrastructure yet.
 
+## PR
+- https://github.com/lawtrann/monorepo/pull/14
+
 ## Next
-Task 0.11 (buf lint verification) is next in dependency order for phase 0.
+Task 1.1 (create scripts/init-db.sql) is next in dependency order for phase 1.
