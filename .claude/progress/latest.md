@@ -1,25 +1,25 @@
-# Session 16
+# Session 17
+
 Date: 2026-03-27
-Task: 1.5 — Create Alembic SQL-first setup for app/eureka/migration/
+Task: 1.6 — Write Casdoor REST API seed script (scripts/seed-casdoor.sh)
 Phase: 1
 Status: COMPLETED
 
 ## Summary
-- Replicated mastermgmt Alembic SQL-first pattern for eureka service
-- alembic.ini with post-write hook for auto SQL stub creation
-- env.py targets eureka schema (ALEMBIC_SCHEMA default "eureka"), builds DB URL from env vars (default port 5433)
-- MetaData(schema=SCHEMA) + include_schemas/include_name for `alembic check` compatibility
-- script.py.mako reads SQL files from migrations/sql/ directory
-- pyproject.toml with alembic + psycopg2-binary, managed by uv
+
+- Wrote `scripts/seed-casdoor.sh` — idempotent Casdoor seed using REST API with Basic auth (clientId:clientSecret from DB)
+- Creates: org `lms`, application `platform` (reuses cert-built-in), Casbin RBAC model `rbac-with-domains`, roles (admin, school_admin, teacher, student, parent, staff hierarchy), test user `test-teacher` assigned to teacher role
+- Auth pattern: fetch credentials from `public.application` WHERE name='app-built-in' each run (never hardcoded)
+- Idempotency: GET-check before each create; role assignment is always applied (safe to re-run)
 
 ## Commits
-- 8ee5f35: feat(migration): create Alembic SQL-first setup for eureka [task 1.5]
+
+- 2f60b79: feat(casdoor): write REST API seed script [task 1.6]
 
 ## Infra state
-Docker Compose ready with db (postgres:18) on port 5433 and casdoor on port 8000. Not currently running (brought down after verify).
 
-## PR
-- https://github.com/lawtrann/monorepo/pull/19
+Docker Compose brought down after verify. Services: db (postgres:18) on port 5433, casdoor on port 8000 — ready to start.
 
 ## Next
-Task 1.6 (Casdoor REST API seed script) is next in dependency order.
+
+Task 1.7 (verify-jwt.sh: seed → login → decode JWT → confirm claims) is next in dependency order.
