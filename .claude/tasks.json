@@ -121,6 +121,83 @@
     "passes": false
   },
   {
+    "id": "1.1",
+    "phase": 1,
+    "scope": "db-init",
+    "description": "Create scripts/init-db.sql — schemas (casdoor, mastermgmt, eureka) + casdoor_user role with search_path",
+    "file": "scripts/init-db.sql",
+    "depends_on": ["0.1"],
+    "verify": "test -f scripts/init-db.sql",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "1.2",
+    "phase": 1,
+    "scope": "casdoor",
+    "description": "Create deployment/casdoor/local/app.conf — Casdoor config pointing to db service as casdoor_user",
+    "file": "deployment/casdoor/local/app.conf",
+    "depends_on": ["0.7"],
+    "verify": "test -f deployment/casdoor/local/app.conf",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "1.3",
+    "phase": 1,
+    "scope": "docker",
+    "description": "Create docker-compose.yml with db (postgres:18) + casdoor services, healthchecks, and volume mounts",
+    "file": "docker-compose.yml",
+    "depends_on": ["1.1", "1.2"],
+    "verify": "docker compose up -d && sleep 5 && curl -sf http://localhost:8000 > /dev/null && docker compose down",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "1.4",
+    "phase": 1,
+    "scope": "migration",
+    "description": "Create Alembic SQL-first setup for app/mastermgmt/migration/ — alembic.ini (post-write hook), migrations/env.py (target_metadata=None, DB URL from env), migrations/script.py.mako, scripts/create_sql_files.py, pyproject.toml",
+    "file": "app/mastermgmt/migration/alembic.ini",
+    "depends_on": ["0.3", "1.3"],
+    "verify": "cd app/mastermgmt/migration && docker compose -f ../../../docker-compose.yml up -d db && sleep 3 && uv sync && uv run alembic check && docker compose -f ../../../docker-compose.yml down",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "1.5",
+    "phase": 1,
+    "scope": "migration",
+    "description": "Create Alembic SQL-first setup for app/eureka/migration/ — same pattern as mastermgmt, targeting eureka schema",
+    "file": "app/eureka/migration/alembic.ini",
+    "depends_on": ["0.4", "1.3"],
+    "verify": "cd app/eureka/migration && docker compose -f ../../../docker-compose.yml up -d db && sleep 3 && uv sync && uv run alembic check && docker compose -f ../../../docker-compose.yml down",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "1.6",
+    "phase": 1,
+    "scope": "casdoor",
+    "description": "Write Casdoor REST API seed script (scripts/seed-casdoor.sh) — create org lms, platform application, Casbin RBAC model, roles (admin, school_admin, teacher, student, parent), role hierarchy (staff), and test user",
+    "file": "scripts/seed-casdoor.sh",
+    "depends_on": ["1.3"],
+    "verify": "docker compose up -d && sleep 5 && bash scripts/seed-casdoor.sh && docker compose down",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "1.7",
+    "phase": 1,
+    "scope": "casdoor",
+    "description": "Verify end-to-end: seed Casdoor, login as test user, decode JWT, confirm claims contain org, roles, permissions",
+    "file": "scripts/verify-jwt.sh",
+    "depends_on": ["1.6"],
+    "verify": "docker compose up -d && sleep 5 && bash scripts/seed-casdoor.sh && bash scripts/verify-jwt.sh && docker compose down",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
     "id": "2.1",
     "phase": 2,
     "scope": "apperr",
