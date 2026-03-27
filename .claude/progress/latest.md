@@ -23,6 +23,10 @@ Created `pkg/goshared/db/pgx/pool.go` with `PgxPool` struct:
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/24
+
 ## Next
 
 Task 2.4 (pkg/goshared/repo/filter.go — ListFilter + Page[T]) is next in dependency order.
