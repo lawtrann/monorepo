@@ -115,7 +115,7 @@
     ],
     "verify": "test -f .age-key.txt && sops -d deployment/mastermgmt/local/secrets.yaml > /dev/null",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "0.10",
