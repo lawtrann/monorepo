@@ -1,22 +1,23 @@
-# Session 20
+# Session 21
 
 Date: 2026-03-27
-Task: 2.2 — Create pkg/goshared/db/db.go — Pool interface + Config struct
+Task: 2.3 — Create pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface
 Phase: 2
 Status: COMPLETED
 
 ## Summary
 
-Created `pkg/goshared/db/db.go` with:
-- `Pool` interface: Acquire, QueryRow, Query, Exec, Close — using pgx/pgxpool types
-- `Config` struct: Host, Port, User, Password, DBName, Schema, PoolSize
-- `UnitOfWork` interface: Begin(ctx) returns pgx.Tx for atomic multi-repo operations
-
-Follows the exact pattern from the phase file.
+Created `pkg/goshared/db/pgx/pool.go` with `PgxPool` struct:
+- Wraps `*pgxpool.Pool`, satisfies `db.Pool` interface
+- `NewPgxPool(ctx, cfg db.Config)` builds pool with tenant hooks
+- `AfterConnect`: `SET search_path TO <schema>` — scopes all queries to the configured schema
+- `BeforeAcquire` (PrepareConn): reads tenant slug from context via `WithTenant(ctx, slug)`, executes `SET app.current_tenant = $1`
+- `AfterRelease`: `RESET app.current_tenant` — cleans tenant context on connection return
+- `WithTenant(ctx, slug)` helper to inject tenant into context
 
 ## Commits
 
-- 44525f7: feat(db): create Pool interface, Config struct, UnitOfWork interface [task 2.2]
+- 3744171: feat(db): create PgxPool implementing Pool interface [task 2.3]
 
 ## Infra state
 
@@ -24,8 +25,8 @@ No infrastructure needed. Docker services not running.
 
 ## PR
 
-- https://github.com/lawtrann/monorepo/pull/23
+- https://github.com/lawtrann/monorepo/pull/24
 
 ## Next
 
-Task 2.3 (pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface) is next in dependency order.
+Task 2.4 (pkg/goshared/repo/filter.go — ListFilter + Page[T]) is next in dependency order.

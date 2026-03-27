@@ -275,7 +275,7 @@
     ],
     "verify": "cd pkg/goshared && go build ./db/...",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "2.4",
