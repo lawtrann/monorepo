@@ -1,30 +1,22 @@
-# Session 18
+# Session 19
 
 Date: 2026-03-27
-Task: 1.7 — Verify end-to-end: seed Casdoor, login as test user, decode JWT, confirm claims contain org, roles, permissions
-Phase: 1
+Task: 2.1 — Create pkg/goshared/apperr/apperr.go — NotFound, AlreadyExists, InvalidInput, Forbidden, Conflict error types with Unwrap
+Phase: 2
 Status: COMPLETED
 
 ## Summary
 
-- Wrote `scripts/verify-jwt.sh` — logs in as test-teacher via OAuth2 password grant, decodes JWT, asserts: `owner==lms`, `name` present, `roles` contains `teacher`
-- Fixed `scripts/seed-casdoor.sh` — changed `tokenFormat` from `JWT-Standard` to `JWT` (Casdoor's own format); `JWT-Standard` omits roles/permissions claims. Added update-always logic so existing environments are patched on re-run
-- Key pitfall avoided: `POST /api/login` is broken in Casdoor v1.777.0 — used OAuth2 password grant (`POST /api/login/oauth/access_token`) instead
-- Casdoor JWT format: roles are objects `{"owner":"lms","name":"teacher",...}` not strings; user `test-teacher` has roles `[staff, teacher]` (staff via role hierarchy)
+Created `pkg/goshared/apperr/apperr.go` with five error types (NotFound, AlreadyExists, InvalidInput, Forbidden, Conflict). Each type has: `Description string`, `Err error`, `Error() string`, and `Unwrap() error`. Follows the pattern from the phase file exactly.
 
 ## Commits
 
-- 19e95a1: fix(casdoor): use tokenFormat=JWT for platform app to include roles in JWT [task 1.7]
-- 524a033: feat(casdoor): write verify-jwt.sh for end-to-end JWT verification [task 1.7]
+- 4be1904: feat(apperr): create error types NotFound, AlreadyExists, InvalidInput, Forbidden, Conflict [task 2.1]
 
 ## Infra state
 
-Docker Compose brought down after verify. Services: db (postgres:18) on port 5432, casdoor on port 8000 — ready to start.
-
-## PR
-
-- https://github.com/lawtrann/monorepo/pull/21
+No infrastructure needed. Docker services not running.
 
 ## Next
 
-Task 2.1 (pkg/goshared/apperr/apperr.go — error types) is next in dependency order.
+Task 2.2 (pkg/goshared/db/db.go — Pool interface + Config struct) is next in dependency order.
