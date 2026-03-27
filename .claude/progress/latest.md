@@ -21,6 +21,10 @@ Created `pkg/goshared/repo/mapped.go` with:
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/28
+
 ## Next
 
 Task 2.8 is next — unit tests for apperr, BaseRepo, MappedRepo, reflect utils using mock Pool.
