@@ -64,7 +64,22 @@ From the picked task's `phase` field, find and read:
 
 This file contains: decisions, code patterns, verification commands, and skill hints for this phase. It is your primary reference during implementation.
 
-### Step 4: Rotate progress + create branch
+### Step 4: Sync develop + create branch
+
+**First, sync with develop:**
+```bash
+git checkout develop
+git pull origin develop
+```
+
+**Check for clean working tree:**
+```bash
+git status --porcelain
+```
+If there are uncommitted changes, warn and stop:
+```
+Working tree is not clean. Please commit or stash changes before starting a new session.
+```
 
 **Rotate progress file:**
 - Read current `.claude/progress/latest.md`
@@ -74,7 +89,7 @@ This file contains: decisions, code patterns, verification commands, and skill h
   - Rename `latest.md` → `session-{N}.md` (e.g. `session-1.md`, `session-2.md`)
 - Create new `.claude/progress/latest.md` with:
 ```markdown
-# Session {N}
+# Session {N+1}
 Date: {today}
 Task: {task.id} — {task.description}
 Phase: {task.phase}
@@ -88,19 +103,8 @@ Status: IN_PROGRESS
 If early phase with no infra yet, write "No infrastructure yet."}
 ```
 
-**Check for clean working tree:**
+**Create task branch:**
 ```bash
-git status --porcelain
-```
-If there are uncommitted changes, warn and stop:
-```
-Working tree is not clean. Please commit or stash changes before starting a new session.
-```
-
-**Create branch:**
-```bash
-git checkout develop
-git pull origin develop
 git checkout -b task/{id}_{slug}
 ```
 
