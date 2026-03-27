@@ -21,6 +21,10 @@ Status: COMPLETED
 
 Docker Compose brought down after verify. Services: db (postgres:18) on port 5432, casdoor on port 8000 — ready to start.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/21
+
 ## Next
 
 Task 2.1 (pkg/goshared/apperr/apperr.go — error types) is next in dependency order.
