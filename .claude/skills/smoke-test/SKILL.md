@@ -86,14 +86,22 @@ Based on results:
 
 ## Check details
 
+### Resolve repo root first
+
+Always determine the absolute repo root before running any checks. Use it for all `cd` commands so checks work regardless of the shell's current working directory.
+
+```bash
+REPO_ROOT=$(git rev-parse --show-toplevel)
+```
+
 ### Go modules
 
 ```bash
-# Find all go.mod files
-find . -name "go.mod" -not -path "*/vendor/*"
+# Find all go.mod files (run from REPO_ROOT)
+find "$REPO_ROOT" -name "go.mod" -not -path "*/vendor/*"
 
-# For each module directory:
-cd <module-dir>
+# For each module directory — always use absolute path:
+cd "$REPO_ROOT/<module-dir>"
 go build ./...          # build check
 go test ./... 2>&1      # test check (only if *_test.go files exist)
 ```
@@ -102,7 +110,7 @@ go test ./... 2>&1      # test check (only if *_test.go files exist)
 
 ```bash
 # Only if docker-compose.yml exists
-docker-compose ps --format json 2>/dev/null
+cd "$REPO_ROOT" && docker compose ps 2>/dev/null
 # Check: are expected services running and healthy?
 ```
 
@@ -110,8 +118,8 @@ docker-compose ps --format json 2>/dev/null
 
 ```bash
 # Only if alembic.ini exists AND DB is reachable
-cd <migration-dir>
-alembic check 2>&1
+cd "$REPO_ROOT/<migration-dir>"
+uv run alembic check 2>&1
 # "No new upgrade operations detected" = pass
 ```
 
@@ -119,7 +127,7 @@ alembic check 2>&1
 
 ```bash
 # Only if buf.yaml exists AND .proto files exist
-cd <proto-dir>
+cd "$REPO_ROOT/<proto-dir>"
 buf lint 2>&1
 ```
 
