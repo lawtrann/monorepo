@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+
+  casdoor:
+    image: casbin/casdoor:v1.777.0
+    depends_on:
+      db: { condition: service_healthy }
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./deployment/casdoor/local/app.conf:/conf/app.conf
