@@ -137,16 +137,19 @@ Where `{slug}` is the task description slugified (lowercase, hyphens, max 50 cha
 
 ### Step 5: Smoke test
 
-Run `/smoke-test` before proceeding.
+Launch the **smoke-test subagent** via the Agent tool (foreground, not background):
 
-If smoke test reports failures:
+- `subagent_type: smoke-test`
+- `description: "Run smoke test"`
+- `prompt: "Run smoke test for the monorepo. Return the verdict."`
 
-- If it's a pre-existing failure (not caused by current task): fix it first, commit as `fix: resolve pre-existing {issue} before task {id}`
-- If unfixable: update progress to BLOCKED, explain the failure, stop.
+Wait for the agent to return. Read the final line of its response:
 
-If all pass or no checks apply yet (early phases): proceed to Step 6.
-
-If `/smoke-test` does not produce a clear pass/fail verdict (e.g. skill errors out or returns ambiguous output), treat as PASS with caution — log a warning in progress and proceed, but be extra careful during implementation.
+- **`Smoke test PASSED`** → proceed to Step 6
+- **`Smoke test FAILED: ...`** → apply the same rules:
+  - Pre-existing failure: fix first, commit as `fix: resolve pre-existing {issue} before task {id}`
+  - Unfixable: update progress to BLOCKED, explain failure, stop
+- **Ambiguous / agent error** → treat as PASS with caution, log a warning in progress, proceed carefully
 
 ### Step 6: Implement
 
