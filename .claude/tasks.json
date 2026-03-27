@@ -155,7 +155,7 @@
     ],
     "verify": "test -f scripts/init-db.sql",
     "estimated_size": "small",
-    "passes": false
+    "passes": true
   },
   {
     "id": "1.2",
