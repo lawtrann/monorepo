@@ -135,22 +135,17 @@ Rules during implementation:
 - Each concern gets its own commit. Do not bundle unrelated changes.
 - Run the task's `verify` command before considering the task done.
 
-### Step 7: Verify + commit + push
+### Step 7: Verify + commit
 
 1. Run the verify command from `tasks.json` for this task
 2. If verify fails → fix and retry. If stuck → mark BLOCKED in progress, stop.
 3. If verify passes:
    - Commit with message: `feat({scope}): {description} [task {id}]`
      where `{scope}` comes from the task's `scope` field in tasks.json
-   - Push branch: `git push -u origin task/{id}_{slug}`
-   - Create PR targeting `develop`:
-     ```bash
-     gh pr create --base develop --title "feat({scope}): {task.description}" --body "Task {id} from phase {phase}. Verify: \`{verify}\`"
-     ```
 
-### Step 8: Update progress
+### Step 8: Update progress + push + PR
 
-Update `.claude/progress/latest.md`:
+1. Update `.claude/progress/latest.md`:
 ```markdown
 # Session {N}
 Date: {today}
@@ -164,15 +159,25 @@ Status: COMPLETED
 ## Commits
 - {commit hash}: {message}
 
-## PR
-- {PR URL}
-
 ## Infra state
 {Current state: which Docker services running, DB migrations applied, external services configured}
 
 ## Next
 Task {next_id} is next in dependency order (informational only).
 ```
+
+2. Commit progress: `docs: update session progress to COMPLETED [task {id}]`
+3. Push branch: `git push -u origin task/{id}_{slug}`
+4. Create PR targeting `develop`:
+   ```bash
+   gh pr create --base develop --title "feat({scope}): {task.description}" --body "Task {id} from phase {phase}. Verify: \`{verify}\`"
+   ```
+5. Add the PR URL to `latest.md` under a `## PR` section and amend the progress commit:
+   ```bash
+   git add .claude/progress/latest.md
+   git commit --amend --no-edit
+   git push --force-with-lease
+   ```
 
 ## Important rules
 
