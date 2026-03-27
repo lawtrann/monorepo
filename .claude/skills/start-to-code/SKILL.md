@@ -23,6 +23,31 @@ No arguments needed — the skill reads state from harness files.
 
 ## Process
 
+### Step 0: Sync to develop
+
+Before reading any harness files, ensure you are on an up-to-date `develop` branch.
+
+```bash
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$current_branch" = "develop" ]; then
+  git pull origin develop
+else
+  git fetch origin develop:develop
+  git checkout develop
+fi
+```
+
+**Check for clean working tree:**
+```bash
+git status --porcelain
+```
+If there are uncommitted changes, warn and stop:
+```
+Working tree is not clean. Please commit or stash changes before starting a new session.
+```
+
+Only proceed once you are on an up-to-date, clean `develop` branch.
+
 ### Step 1: Read progress
 
 Read `.claude/progress/latest.md`.
@@ -64,22 +89,7 @@ From the picked task's `phase` field, find and read:
 
 This file contains: decisions, code patterns, verification commands, and skill hints for this phase. It is your primary reference during implementation.
 
-### Step 4: Sync develop + create branch
-
-**First, sync with develop:**
-```bash
-git fetch origin develop:develop
-git checkout develop
-```
-
-**Check for clean working tree:**
-```bash
-git status --porcelain
-```
-If there are uncommitted changes, warn and stop:
-```
-Working tree is not clean. Please commit or stash changes before starting a new session.
-```
+### Step 4: Rotate progress + create branch
 
 **Rotate progress file:**
 - Read current `.claude/progress/latest.md`
