@@ -17,6 +17,10 @@ Created `pkg/goshared/apperr/apperr.go` with five error types (NotFound, Already
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/22
+
 ## Next
 
 Task 2.2 (pkg/goshared/db/db.go — Pool interface + Config struct) is next in dependency order.
