@@ -88,6 +88,7 @@ github.com/lestrrat-go/jwx/v3 (latest)
 github.com/minio/minio-go/v7 v7.0.83
 github.com/twmb/franz-go v1.18.0
 github.com/stretchr/testify v1.10.0
+github.com/google/uuid v1.6.0
 google.golang.org/protobuf v1.36.5
 ```
 
