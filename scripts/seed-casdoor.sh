@@ -61,14 +61,26 @@ else
 fi
 
 # --- 2. Application: platform ---
+# tokenFormat=JWT (not JWT-Standard) so that roles/permissions are included in the token claims.
 echo ""
 echo "--- Application: platform ---"
 if resource_exists "${BASE}/api/get-application?id=admin/platform"; then
-  echo "[SKIP] application platform already exists"
+  echo "[SKIP] application platform already exists — ensuring tokenFormat=JWT"
+  APP_JSON=$(curl -s -u "$CRED" 'http://localhost:8000/api/get-application?id=admin/platform' | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+app = d['data']
+app['tokenFormat'] = 'JWT'
+print(json.dumps(app))
+")
+  RESP=$(curl -s -u "$CRED" -X POST 'http://localhost:8000/api/update-application?id=admin/platform' \
+    -H 'Content-Type: application/json' \
+    --data-binary "$APP_JSON")
+  assert_ok "$RESP" "update application platform tokenFormat"
 else
   RESP=$(curl -s -u "$CRED" -X POST "${BASE}/api/add-application" \
     -H 'Content-Type: application/json' \
-    --data-binary '{"owner":"admin","name":"platform","displayName":"Platform App","organization":"lms","cert":"cert-built-in","enablePassword":true,"enableSignUp":false,"redirectUris":["http://localhost:3000/callback"],"expireInHours":168,"grantTypes":["authorization_code","password"],"tokenFormat":"JWT-Standard"}')
+    --data-binary '{"owner":"admin","name":"platform","displayName":"Platform App","organization":"lms","cert":"cert-built-in","enablePassword":true,"enableSignUp":false,"redirectUris":["http://localhost:3000/callback"],"expireInHours":168,"grantTypes":["authorization_code","password"],"tokenFormat":"JWT"}')
   assert_ok "$RESP" "create application platform"
 fi
 
