@@ -120,6 +120,9 @@ type Page[T any] struct {
 }
 ```
 
+## Testing notes
+For task 2.8, create test-local mock implementations of `db.Pool` directly in the test files (e.g. `repo/base_test.go`). The formal `mock/` package (task 2.23) is deferred to Phase 9. Use `testify/assert` for assertions but implement mocks as simple structs satisfying the interface — do not use `testify/mock` for these.
+
 ## Verification
 - `cd pkg/goshared && go build ./apperr/...` — error types compile
 - `cd pkg/goshared && go build ./db/...` — pool interface + pgx impl compile

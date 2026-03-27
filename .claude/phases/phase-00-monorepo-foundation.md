@@ -56,6 +56,41 @@ monorepo/
 └── README.md
 ```
 
+### .gitignore
+```gitignore
+# Age key (SOPS secret — never commit)
+.age-key.txt
+*.age
+
+# Go
+/bin/
+*.exe
+*.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Python (Alembic)
+__pycache__/
+*.pyc
+.venv/
+
+# Dependencies
+vendor/
+node_modules/
+```
+
 ### go.work
 Task 0.2 creates `go.work` with only `./pkg/goshared`. Tasks 0.3 and 0.4 each add their module via `go work use ./app/mastermgmt` and `go work use ./app/eureka`.
 
