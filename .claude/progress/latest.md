@@ -1,23 +1,19 @@
-# Session 21
+# Session 22
 
 Date: 2026-03-27
-Task: 2.3 — Create pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface
+Task: 2.4 — Create pkg/goshared/repo/filter.go — ListFilter + Page[T]
 Phase: 2
 Status: COMPLETED
 
 ## Summary
 
-Created `pkg/goshared/db/pgx/pool.go` with `PgxPool` struct:
-- Wraps `*pgxpool.Pool`, satisfies `db.Pool` interface
-- `NewPgxPool(ctx, cfg db.Config)` builds pool with tenant hooks
-- `AfterConnect`: `SET search_path TO <schema>` — scopes all queries to the configured schema
-- `BeforeAcquire` (PrepareConn): reads tenant slug from context via `WithTenant(ctx, slug)`, executes `SET app.current_tenant = $1`
-- `AfterRelease`: `RESET app.current_tenant` — cleans tenant context on connection return
-- `WithTenant(ctx, slug)` helper to inject tenant into context
+Created `pkg/goshared/repo/filter.go` with:
+- `ListFilter` struct: Cursor (*uuid.UUID), Limit (int32), Offset (*int32), PageSize (int32), SortBy (string), SortOrder (string "ASC"|"DESC")
+- `Page[T any]` generic struct: Items ([]T), NextCursor (*uuid.UUID), Total (*int64)
 
 ## Commits
 
-- 3744171: feat(db): create PgxPool implementing Pool interface [task 2.3]
+- 9179bbc: feat(repo): create ListFilter and Page[T] structs [task 2.4]
 
 ## Infra state
 
@@ -25,8 +21,8 @@ No infrastructure needed. Docker services not running.
 
 ## PR
 
-- https://github.com/lawtrann/monorepo/pull/24
+- https://github.com/lawtrann/monorepo/pull/25
 
 ## Next
 
-Task 2.4 (pkg/goshared/repo/filter.go — ListFilter + Page[T]) is next in dependency order.
+Task 2.5 is next (pkg/goshared/repo/reflect.go — structToColumnsAndValues + field mapping). Task 2.5 also has no blocking dependencies.
