@@ -1,9 +1,31 @@
+# Age key (SOPS secret — never commit)
+.age-key.txt
+*.age
+
+# Go
+/bin/
+*.exe
+*.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
 # OS
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Environment
+.env
+.env.local
+
+# Python (Alembic)
+__pycache__/
+*.pyc
+.venv/
+
+# Dependencies
+vendor/
+node_modules/
