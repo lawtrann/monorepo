@@ -344,6 +344,6 @@
     ],
     "verify": "cd pkg/goshared && go test ./...",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   }
 ]
