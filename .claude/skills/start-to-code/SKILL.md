@@ -213,7 +213,7 @@ Task {next_id} is next in dependency order (informational only).
    ```bash
    git add .claude/progress/latest.md
    git commit -m "docs: add PR URL to session progress [task {id}]"
-   git pull --rebase && git push
+   git push
    ```
 
 ## Important rules
