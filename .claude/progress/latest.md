@@ -23,6 +23,10 @@ Key design decision: mock Rows.Scan checks if len(dest)==1 and dest[0] is a rowS
 
 No infrastructure needed. Docker services not running.
 
+## PR
+
+- https://github.com/lawtrann/monorepo/pull/29
+
 ## Next
 
 Task 2.9 (if defined) or next phase tasks.
