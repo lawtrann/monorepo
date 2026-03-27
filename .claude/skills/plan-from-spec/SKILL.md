@@ -12,6 +12,7 @@ argument-hint: <spec-file-path>
 # Plan from spec
 
 You are a planning agent. You read a spec and produce two outputs:
+
 1. Task entries appended to `.claude/tasks.json`
 2. Phase context files in `.claude/phases/`
 
@@ -38,6 +39,7 @@ The spec file path is passed as `$ARGUMENTS`.
 Based on the spec and what's already planned, propose the next 2-3 phases to plan.
 
 Present to human:
+
 ```
 I've read the spec and current state.
 
@@ -59,6 +61,7 @@ Approve this scope? Or adjust?
 For the proposed phases, list anything ambiguous or underspecified in the spec.
 
 Present to human:
+
 ```
 Open questions for Phase 3-5:
 
@@ -77,6 +80,7 @@ If zero open questions: tell human "No open questions — proceeding to generate
 For each phase in scope, generate task entries following the schema in [tasks-schema.json](tasks-schema.json).
 
 Rules for task generation:
+
 - Each task must fit ONE coding session. If unsure, split smaller.
 - `estimated_size: small` = <30 min, `medium` = 30-90 min, `large` = 90+ min (split these!)
 - `depends_on` must reference only task IDs that exist (already planned or in current batch)
@@ -92,6 +96,7 @@ Rules for task generation:
 - **Verify Docker image tags**: If tasks reference specific Docker image tags (e.g. `postgres:18`), verify the tag exists or note it as an open question.
 
 Present the generated tasks to human as a table:
+
 ```
 Generated tasks for Phase 3:
 
@@ -111,6 +116,7 @@ Approve? Or adjust any tasks?
 For each phase in scope, generate a phase context file following the template in [phase-template.md](phase-template.md).
 
 Key principles for phase files:
+
 - Copy all relevant code snippets from spec — agent should NOT need to open the spec
 - Link to spec for "why" decisions: `> See .claude/specs/<name>.md for rationale`
 - Include skill hints where relevant: `> Use /skill-name for [specific pattern]`
@@ -124,6 +130,7 @@ Present phase file to human for review before writing.
 ### Step 6: Write outputs
 
 After all approvals:
+
 1. Append new tasks to `.claude/tasks.json` (preserve existing tasks, add new ones)
 2. Write phase files to `.claude/phases/phase-{NN}-{slug}.md`
 3. Report what was written

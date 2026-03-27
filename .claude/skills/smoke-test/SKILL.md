@@ -5,7 +5,7 @@ description: >
   Runs build checks, existing tests, and service health checks.
   Adapts to the project's tech stack and infrastructure.
   If any check fails, reports the failure for fixing before new work begins.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Smoke test
@@ -27,15 +27,15 @@ No arguments. Auto-detects checks based on filesystem.
 
 Scan the repo to determine which checks apply:
 
-| If this exists | Then check |
-|---|---|
-| `**/go.mod` | Go build + Go test for that module |
-| `**/package.json` | npm/pnpm install status + lint |
-| `**/pyproject.toml` or `**/requirements.txt` | Python env exists + deps installed |
-| `docker-compose.yml` | Services running (`docker-compose ps`) |
-| `**/alembic.ini` | Alembic migrations up to date |
-| `**/buf.yaml` | `buf lint` passes |
-| `Makefile` | `make` is available |
+| If this exists                               | Then check                             |
+| -------------------------------------------- | -------------------------------------- |
+| `**/go.mod`                                  | Go build + Go test for that module     |
+| `**/package.json`                            | npm/pnpm install status + lint         |
+| `**/pyproject.toml` or `**/requirements.txt` | Python env exists + deps installed     |
+| `docker-compose.yml`                         | Services running (`docker-compose ps`) |
+| `**/alembic.ini`                             | Alembic migrations up to date          |
+| `**/buf.yaml`                                | `buf lint` passes                      |
+| `Makefile`                                   | `make` is available                    |
 
 Only check what exists. Early-phase projects may have very few checks — that's fine.
 
@@ -51,6 +51,7 @@ Run checks in this priority order (most fundamental first):
 6. **Migration checks** — Alembic current head matches (only if DB is running)
 
 For each check, capture:
+
 - Check name
 - Command run
 - Pass or fail
@@ -86,6 +87,7 @@ Based on results:
 ## Check details
 
 ### Go modules
+
 ```bash
 # Find all go.mod files
 find . -name "go.mod" -not -path "*/vendor/*"
@@ -97,6 +99,7 @@ go test ./... 2>&1      # test check (only if *_test.go files exist)
 ```
 
 ### Docker services
+
 ```bash
 # Only if docker-compose.yml exists
 docker-compose ps --format json 2>/dev/null
@@ -104,6 +107,7 @@ docker-compose ps --format json 2>/dev/null
 ```
 
 ### Alembic migrations
+
 ```bash
 # Only if alembic.ini exists AND DB is reachable
 cd <migration-dir>
@@ -112,6 +116,7 @@ alembic check 2>&1
 ```
 
 ### Buf lint
+
 ```bash
 # Only if buf.yaml exists AND .proto files exist
 cd <proto-dir>
