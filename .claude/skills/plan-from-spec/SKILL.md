@@ -85,6 +85,11 @@ Rules for task generation:
 - `passes` is always `false` — only CI changes this
 - `scope` is a short label (1-2 words) for the area the task touches — used as the commit scope in conventional commit messages (e.g. `auth`, `db`, `api`)
 - For each `verify` command, check: does the required tool/binary exist yet? If it depends on a tool installed by another task (e.g. `alembic check` needs Python env from a prior task), ensure that task is in `depends_on`. If no prior task sets up the tool, either make the current task include setup, or create a prerequisite task.
+- **Trace execution order**: After generating all tasks, mentally trace through the dependency chain. For each task, verify that its `verify` command only references files, directories, and tools that will exist after all `depends_on` tasks have completed. This catches circular references and missing intermediate dependencies.
+- **No external URL references in phase files**: Phase files must be fully self-contained. Never reference external URLs (GitHub repos, docs sites) as required reading for the coding agent — embed the relevant content directly. The agent may not have internet access.
+- **Validate referenced types/packages**: If code patterns in the phase file reference types from external packages (e.g. `uuid.UUID`, `pgx.Row`), verify those packages are listed in the dependency table. Flag any missing packages as open questions.
+- **Include auth/credentials for service tasks**: If a task requires interacting with an external service API (e.g. Casdoor, MinIO), the phase file must document default credentials, auth flow, and API base URL.
+- **Verify Docker image tags**: If tasks reference specific Docker image tags (e.g. `postgres:18`), verify the tag exists or note it as an open question.
 
 Present the generated tasks to human as a table:
 ```
