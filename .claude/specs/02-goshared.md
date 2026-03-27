@@ -184,7 +184,7 @@ func ErrorInterceptor(next connect.UnaryFunc) connect.UnaryFunc {
 ```go
 // pkg/goshared/repo/base.go
 type BaseRepo[R any, ID comparable] struct {
-    pool  *pgxpool.Pool
+    pool  db.Pool       // interface, not concrete *pgxpool.Pool
     table string  // e.g. "courses" (search_path set by AfterConnect)
     pk    string  // e.g. "course_id"
 }

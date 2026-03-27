@@ -56,8 +56,53 @@ monorepo/
 └── README.md
 ```
 
+### .gitignore
+```gitignore
+# Age key (SOPS secret — never commit)
+.age-key.txt
+*.age
+
+# Go
+/bin/
+*.exe
+*.test
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Python (Alembic)
+__pycache__/
+*.pyc
+.venv/
+
+# Dependencies
+vendor/
+node_modules/
+```
+
 ### go.work
+Task 0.2 creates `go.work` with only `./pkg/goshared`. Tasks 0.3 and 0.4 each add their module via `go work use ./app/mastermgmt` and `go work use ./app/eureka`.
+
 ```go
+// After task 0.2:
+go 1.24
+
+use (
+    ./pkg/goshared
+)
+
+// After tasks 0.3 and 0.4, final state:
 go 1.24
 
 use (
@@ -78,6 +123,7 @@ github.com/lestrrat-go/jwx/v3 (latest)
 github.com/minio/minio-go/v7 v7.0.83
 github.com/twmb/franz-go v1.18.0
 github.com/stretchr/testify v1.10.0
+github.com/google/uuid v1.6.0
 google.golang.org/protobuf v1.36.5
 ```
 
