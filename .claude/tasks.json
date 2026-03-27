@@ -301,7 +301,7 @@
     ],
     "verify": "cd pkg/goshared && go build ./repo/...",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "2.6",
