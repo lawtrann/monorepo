@@ -18,5 +18,8 @@ Status: COMPLETED
 ## Infra state
 Docker Compose ready with db (postgres:18) on port 5433 and casdoor on port 8000. Not currently running (brought down after verify).
 
+## PR
+- https://github.com/lawtrann/monorepo/pull/19
+
 ## Next
 Task 1.6 (Casdoor REST API seed script) is next in dependency order.
