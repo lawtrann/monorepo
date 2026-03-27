@@ -1,24 +1,23 @@
-# Session 7
+# Session 8
 Date: 2026-03-27
-Task: 0.6 — Create app/mastermgmt/proto/ and app/eureka/proto/ with buf.yaml, buf.gen.yaml, and placeholder health.proto
+Task: 0.8 — Add make setup target installing Buf, sqlc, air via go install, SOPS + age via brew
 Phase: 0
 Status: COMPLETED
 
 ## Summary
-Created proto directory structure for both services:
-- buf.yaml (v2, STANDARD lint, FILE breaking) per service
-- buf.gen.yaml (protocolbuffers/go + connectrpc/go plugins, output to pkg/go/) per service
-- Placeholder health.proto with HealthService RPC (mastermgmt/v1 and eureka/v1 packages)
+Replaced placeholder `setup` target in Makefile with actual tool installation commands:
+- `go install` for buf, sqlc, air
+- `brew install` for sops, age
 
 ## Commits
-- de8a2ec: docs: rotate session progress and start task 0.6
-- 1f80e87: feat(proto): create proto dirs with buf.yaml, buf.gen.yaml, and health.proto [task 0.6]
+- 9c6214a: docs: rotate session progress and start task 0.8
+- 2a0ec3d: feat(tooling): add make setup target for buf, sqlc, air, sops, age [task 0.8]
 
 ## PR
-- https://github.com/lawtrann/monorepo/pull/10
+- (pending)
 
 ## Infra state
 No infrastructure yet.
 
 ## Next
-Task 0.8 (make setup target for tooling) is next in dependency order.
+Task 0.9 (SOPS + age key setup) depends on 0.8 and is next in dependency order.

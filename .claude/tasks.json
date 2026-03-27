@@ -101,7 +101,7 @@
     ],
     "verify": "make setup && which buf && which sqlc",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "0.9",
