@@ -182,7 +182,7 @@
     ],
     "verify": "docker compose up -d && sleep 5 && curl -sf http://localhost:8000 > /dev/null && docker compose down",
     "estimated_size": "medium",
-    "passes": false
+    "passes": true
   },
   {
     "id": "1.4",
