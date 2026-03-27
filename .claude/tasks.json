@@ -8,7 +8,7 @@
     "depends_on": [],
     "verify": "test -f Makefile && test -f .gitignore && test -f README.md",
     "estimated_size": "small",
-    "passes": false
+    "passes": true
   },
   {
     "id": "0.2",
@@ -16,7 +16,9 @@
     "scope": "go-modules",
     "description": "Create go.work (with only ./pkg/goshared initially) and pkg/goshared/go.mod with pinned common deps",
     "file": "go.work",
-    "depends_on": ["0.1"],
+    "depends_on": [
+      "0.1"
+    ],
     "verify": "cd pkg/goshared && go build ./...",
     "estimated_size": "small",
     "passes": false
@@ -27,7 +29,9 @@
     "scope": "go-modules",
     "description": "Create app/mastermgmt/ Go module — go.mod imports pkg/goshared, cmd/server/main.go + cmd/worker/main.go stubs, add to go.work via go work use",
     "file": "app/mastermgmt/go.mod",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "go work sync && cd app/mastermgmt && go build ./...",
     "estimated_size": "small",
     "passes": false
@@ -38,7 +42,9 @@
     "scope": "go-modules",
     "description": "Create app/eureka/ Go module — go.mod imports pkg/goshared, cmd/server/main.go + cmd/worker/main.go stubs, add to go.work via go work use",
     "file": "app/eureka/go.mod",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "go work sync && cd app/eureka && go build ./...",
     "estimated_size": "small",
     "passes": false
@@ -49,7 +55,10 @@
     "scope": "migration",
     "description": "Create empty app/mastermgmt/migration/ and app/eureka/migration/ dirs with .gitkeep (Alembic setup deferred to Phase 1)",
     "file": "app/mastermgmt/migration/.gitkeep",
-    "depends_on": ["0.3", "0.4"],
+    "depends_on": [
+      "0.3",
+      "0.4"
+    ],
     "verify": "test -d app/mastermgmt/migration && test -d app/eureka/migration",
     "estimated_size": "small",
     "passes": false
@@ -60,7 +69,10 @@
     "scope": "proto",
     "description": "Create app/mastermgmt/proto/ and app/eureka/proto/ with buf.yaml, buf.gen.yaml, and placeholder health.proto",
     "file": "app/mastermgmt/proto/buf.yaml",
-    "depends_on": ["0.3", "0.4"],
+    "depends_on": [
+      "0.3",
+      "0.4"
+    ],
     "verify": "test -f app/mastermgmt/proto/buf.yaml && test -f app/eureka/proto/buf.yaml && test -f app/mastermgmt/proto/mastermgmt/v1/health.proto",
     "estimated_size": "small",
     "passes": false
@@ -71,7 +83,9 @@
     "scope": "deployment",
     "description": "Create deployment/ tree — mastermgmt/, eureka/, casdoor/ each with local/ containing placeholder config.yaml",
     "file": "deployment/mastermgmt/local/config.yaml",
-    "depends_on": ["0.1"],
+    "depends_on": [
+      "0.1"
+    ],
     "verify": "test -d deployment/mastermgmt/local && test -d deployment/eureka/local && test -d deployment/casdoor/local",
     "estimated_size": "small",
     "passes": false
@@ -82,7 +96,9 @@
     "scope": "tooling",
     "description": "Add make setup target installing Buf, sqlc, air via go install, SOPS + age via brew",
     "file": "Makefile",
-    "depends_on": ["0.1"],
+    "depends_on": [
+      "0.1"
+    ],
     "verify": "make setup && which buf && which sqlc",
     "estimated_size": "medium",
     "passes": false
@@ -93,7 +109,10 @@
     "scope": "sops",
     "description": "Generate age key (gitignored), create .sops.yaml, encrypt initial secrets.yaml per app in deployment/*/local/",
     "file": ".sops.yaml",
-    "depends_on": ["0.7", "0.8"],
+    "depends_on": [
+      "0.7",
+      "0.8"
+    ],
     "verify": "test -f .age-key.txt && sops -d deployment/mastermgmt/local/secrets.yaml > /dev/null",
     "estimated_size": "medium",
     "passes": false
@@ -104,7 +123,9 @@
     "scope": "web",
     "description": "Create app/web/ with README.md and .gitkeep",
     "file": "app/web/README.md",
-    "depends_on": ["0.1"],
+    "depends_on": [
+      "0.1"
+    ],
     "verify": "test -f app/web/README.md",
     "estimated_size": "small",
     "passes": false
@@ -115,7 +136,10 @@
     "scope": "proto",
     "description": "Verify buf lint passes for both services' proto dirs",
     "file": "app/eureka/proto/buf.yaml",
-    "depends_on": ["0.6", "0.8"],
+    "depends_on": [
+      "0.6",
+      "0.8"
+    ],
     "verify": "cd app/mastermgmt/proto && buf lint && cd ../../eureka/proto && buf lint",
     "estimated_size": "small",
     "passes": false
@@ -126,7 +150,9 @@
     "scope": "db-init",
     "description": "Create scripts/init-db.sql — schemas (casdoor, mastermgmt, eureka) + casdoor_user role with search_path",
     "file": "scripts/init-db.sql",
-    "depends_on": ["0.1"],
+    "depends_on": [
+      "0.1"
+    ],
     "verify": "test -f scripts/init-db.sql",
     "estimated_size": "small",
     "passes": false
@@ -137,7 +163,9 @@
     "scope": "casdoor",
     "description": "Create deployment/casdoor/local/app.conf — Casdoor config pointing to db service as casdoor_user",
     "file": "deployment/casdoor/local/app.conf",
-    "depends_on": ["0.7"],
+    "depends_on": [
+      "0.7"
+    ],
     "verify": "test -f deployment/casdoor/local/app.conf",
     "estimated_size": "small",
     "passes": false
@@ -148,7 +176,10 @@
     "scope": "docker",
     "description": "Create docker-compose.yml with db (postgres:18) + casdoor services, healthchecks, and volume mounts",
     "file": "docker-compose.yml",
-    "depends_on": ["1.1", "1.2"],
+    "depends_on": [
+      "1.1",
+      "1.2"
+    ],
     "verify": "docker compose up -d && sleep 5 && curl -sf http://localhost:8000 > /dev/null && docker compose down",
     "estimated_size": "medium",
     "passes": false
@@ -159,7 +190,10 @@
     "scope": "migration",
     "description": "Create Alembic SQL-first setup for app/mastermgmt/migration/ — alembic.ini (post-write hook), migrations/env.py (target_metadata=None, DB URL from env), migrations/script.py.mako, scripts/create_sql_files.py, pyproject.toml",
     "file": "app/mastermgmt/migration/alembic.ini",
-    "depends_on": ["0.3", "1.3"],
+    "depends_on": [
+      "0.3",
+      "1.3"
+    ],
     "verify": "cd app/mastermgmt/migration && docker compose -f ../../../docker-compose.yml up -d db && sleep 3 && uv sync && uv run alembic check && docker compose -f ../../../docker-compose.yml down",
     "estimated_size": "medium",
     "passes": false
@@ -170,7 +204,10 @@
     "scope": "migration",
     "description": "Create Alembic SQL-first setup for app/eureka/migration/ — same pattern as mastermgmt, targeting eureka schema",
     "file": "app/eureka/migration/alembic.ini",
-    "depends_on": ["0.4", "1.3"],
+    "depends_on": [
+      "0.4",
+      "1.3"
+    ],
     "verify": "cd app/eureka/migration && docker compose -f ../../../docker-compose.yml up -d db && sleep 3 && uv sync && uv run alembic check && docker compose -f ../../../docker-compose.yml down",
     "estimated_size": "medium",
     "passes": false
@@ -181,7 +218,9 @@
     "scope": "casdoor",
     "description": "Write Casdoor REST API seed script (scripts/seed-casdoor.sh) — create org lms, platform application, Casbin RBAC model, roles (admin, school_admin, teacher, student, parent), role hierarchy (staff), and test user",
     "file": "scripts/seed-casdoor.sh",
-    "depends_on": ["1.3"],
+    "depends_on": [
+      "1.3"
+    ],
     "verify": "docker compose up -d && sleep 5 && bash scripts/seed-casdoor.sh && docker compose down",
     "estimated_size": "medium",
     "passes": false
@@ -192,7 +231,9 @@
     "scope": "casdoor",
     "description": "Verify end-to-end: seed Casdoor, login as test user, decode JWT, confirm claims contain org, roles, permissions",
     "file": "scripts/verify-jwt.sh",
-    "depends_on": ["1.6"],
+    "depends_on": [
+      "1.6"
+    ],
     "verify": "docker compose up -d && sleep 5 && bash scripts/seed-casdoor.sh && bash scripts/verify-jwt.sh && docker compose down",
     "estimated_size": "small",
     "passes": false
@@ -203,7 +244,9 @@
     "scope": "apperr",
     "description": "Create pkg/goshared/apperr/apperr.go — NotFound, AlreadyExists, InvalidInput, Forbidden, Conflict error types with Unwrap",
     "file": "pkg/goshared/apperr/apperr.go",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "cd pkg/goshared && go build ./apperr/...",
     "estimated_size": "small",
     "passes": false
@@ -214,7 +257,9 @@
     "scope": "db",
     "description": "Create pkg/goshared/db/db.go — Pool interface (Acquire, QueryRow, Exec, Query, Close), Config struct, UnitOfWork interface",
     "file": "pkg/goshared/db/db.go",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "cd pkg/goshared && go build ./db/...",
     "estimated_size": "small",
     "passes": false
@@ -225,7 +270,9 @@
     "scope": "db",
     "description": "Create pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface: AfterConnect (search_path), PrepareConn (tenant slug), AfterRelease (RESET)",
     "file": "pkg/goshared/db/pgx/pool.go",
-    "depends_on": ["2.2"],
+    "depends_on": [
+      "2.2"
+    ],
     "verify": "cd pkg/goshared && go build ./db/...",
     "estimated_size": "medium",
     "passes": false
@@ -236,7 +283,9 @@
     "scope": "repo",
     "description": "Create pkg/goshared/repo/filter.go — ListFilter struct (Cursor, Limit, Offset, PageSize, SortBy, SortOrder) and Page[T] struct",
     "file": "pkg/goshared/repo/filter.go",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "cd pkg/goshared && go build ./repo/...",
     "estimated_size": "small",
     "passes": false
@@ -247,7 +296,9 @@
     "scope": "repo",
     "description": "Create pkg/goshared/repo/reflect.go — structToColumnsAndValues (reads db tags, skips tenant/timestamps) + field name to column mapping for UpdateFields",
     "file": "pkg/goshared/repo/reflect.go",
-    "depends_on": ["0.2"],
+    "depends_on": [
+      "0.2"
+    ],
     "verify": "cd pkg/goshared && go build ./repo/...",
     "estimated_size": "medium",
     "passes": false
@@ -258,7 +309,12 @@
     "scope": "repo",
     "description": "Create pkg/goshared/repo/base.go — BaseRepo[R, ID] using Pool interface: GetByID, List, Create, Update, UpdateFields, SoftDelete",
     "file": "pkg/goshared/repo/base.go",
-    "depends_on": ["2.1", "2.2", "2.4", "2.5"],
+    "depends_on": [
+      "2.1",
+      "2.2",
+      "2.4",
+      "2.5"
+    ],
     "verify": "cd pkg/goshared && go build ./repo/...",
     "estimated_size": "medium",
     "passes": false
@@ -269,7 +325,9 @@
     "scope": "repo",
     "description": "Create pkg/goshared/repo/mapped.go — MappedRepo[E, R, ID] wrapping BaseRepo with toDomain/toRow translation functions",
     "file": "pkg/goshared/repo/mapped.go",
-    "depends_on": ["2.6"],
+    "depends_on": [
+      "2.6"
+    ],
     "verify": "cd pkg/goshared && go build ./repo/...",
     "estimated_size": "medium",
     "passes": false
@@ -280,7 +338,10 @@
     "scope": "test",
     "description": "Unit tests for apperr, BaseRepo, MappedRepo, reflect utils using mock Pool — verify interface design works",
     "file": "pkg/goshared/repo/base_test.go",
-    "depends_on": ["2.1", "2.7"],
+    "depends_on": [
+      "2.1",
+      "2.7"
+    ],
     "verify": "cd pkg/goshared && go test ./...",
     "estimated_size": "medium",
     "passes": false
