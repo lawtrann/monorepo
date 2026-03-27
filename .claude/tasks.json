@@ -1,1 +1,211 @@
-[]
+[
+  {
+    "id": "0.1",
+    "phase": 0,
+    "scope": "scaffold",
+    "description": "Create root .gitignore, README.md, root Makefile with setup target placeholder",
+    "file": "Makefile",
+    "depends_on": [],
+    "verify": "test -f Makefile && test -f .gitignore && test -f README.md",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.2",
+    "phase": 0,
+    "scope": "go-modules",
+    "description": "Create go.work and pkg/goshared/go.mod with pinned common deps",
+    "file": "go.work",
+    "depends_on": ["0.1"],
+    "verify": "go work sync",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.3",
+    "phase": 0,
+    "scope": "go-modules",
+    "description": "Create app/mastermgmt/ Go module — go.mod imports pkg/goshared, cmd/server/main.go + cmd/worker/main.go stubs",
+    "file": "app/mastermgmt/go.mod",
+    "depends_on": ["0.2"],
+    "verify": "cd app/mastermgmt && go build ./...",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.4",
+    "phase": 0,
+    "scope": "go-modules",
+    "description": "Create app/eureka/ Go module — go.mod imports pkg/goshared, cmd/server/main.go + cmd/worker/main.go stubs",
+    "file": "app/eureka/go.mod",
+    "depends_on": ["0.2"],
+    "verify": "cd app/eureka && go build ./...",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.5",
+    "phase": 0,
+    "scope": "migration",
+    "description": "Create empty app/mastermgmt/migration/ and app/eureka/migration/ dirs with .gitkeep (Alembic setup deferred to Phase 1)",
+    "file": "app/mastermgmt/migration/.gitkeep",
+    "depends_on": ["0.3", "0.4"],
+    "verify": "test -d app/mastermgmt/migration && test -d app/eureka/migration",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.6",
+    "phase": 0,
+    "scope": "proto",
+    "description": "Create app/mastermgmt/proto/ and app/eureka/proto/ with buf.yaml, buf.gen.yaml, and placeholder health.proto",
+    "file": "app/mastermgmt/proto/buf.yaml",
+    "depends_on": ["0.3", "0.4"],
+    "verify": "cd app/mastermgmt/proto && buf lint",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.7",
+    "phase": 0,
+    "scope": "deployment",
+    "description": "Create deployment/ tree — mastermgmt/, eureka/, casdoor/ each with local/ containing placeholder config.yaml",
+    "file": "deployment/mastermgmt/local/config.yaml",
+    "depends_on": ["0.1"],
+    "verify": "test -d deployment/mastermgmt/local && test -d deployment/eureka/local && test -d deployment/casdoor/local",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.8",
+    "phase": 0,
+    "scope": "tooling",
+    "description": "Add make setup target installing Buf, sqlc, air via go install, SOPS + age via brew",
+    "file": "Makefile",
+    "depends_on": ["0.1"],
+    "verify": "make setup && which buf && which sqlc",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "0.9",
+    "phase": 0,
+    "scope": "sops",
+    "description": "Generate age key (gitignored), create .sops.yaml, encrypt initial secrets.yaml per app in deployment/*/local/",
+    "file": ".sops.yaml",
+    "depends_on": ["0.7", "0.8"],
+    "verify": "test -f .age-key.txt && sops -d deployment/mastermgmt/local/secrets.yaml > /dev/null",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "0.10",
+    "phase": 0,
+    "scope": "web",
+    "description": "Create app/web/ with README.md and .gitkeep",
+    "file": "app/web/README.md",
+    "depends_on": ["0.1"],
+    "verify": "test -f app/web/README.md",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "0.11",
+    "phase": 0,
+    "scope": "proto",
+    "description": "Verify buf lint passes for both services' proto dirs",
+    "file": "app/eureka/proto/buf.yaml",
+    "depends_on": ["0.6", "0.8"],
+    "verify": "cd app/mastermgmt/proto && buf lint && cd ../../eureka/proto && buf lint",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "2.1",
+    "phase": 2,
+    "scope": "apperr",
+    "description": "Create pkg/goshared/apperr/apperr.go — NotFound, AlreadyExists, InvalidInput, Forbidden, Conflict error types with Unwrap",
+    "file": "pkg/goshared/apperr/apperr.go",
+    "depends_on": ["0.2"],
+    "verify": "cd pkg/goshared && go build ./apperr/...",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "2.2",
+    "phase": 2,
+    "scope": "db",
+    "description": "Create pkg/goshared/db/db.go — Pool interface (Acquire, QueryRow, Exec, Query, Close), Config struct, UnitOfWork interface",
+    "file": "pkg/goshared/db/db.go",
+    "depends_on": ["0.2"],
+    "verify": "cd pkg/goshared && go build ./db/...",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "2.3",
+    "phase": 2,
+    "scope": "db",
+    "description": "Create pkg/goshared/db/pgx/pool.go — PgxPool implementing Pool interface: AfterConnect (search_path), PrepareConn (tenant slug), AfterRelease (RESET)",
+    "file": "pkg/goshared/db/pgx/pool.go",
+    "depends_on": ["2.2"],
+    "verify": "cd pkg/goshared && go build ./db/...",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "2.4",
+    "phase": 2,
+    "scope": "repo",
+    "description": "Create pkg/goshared/repo/filter.go — ListFilter struct (Cursor, Limit, Offset, PageSize, SortBy, SortOrder) and Page[T] struct",
+    "file": "pkg/goshared/repo/filter.go",
+    "depends_on": ["0.2"],
+    "verify": "cd pkg/goshared && go build ./repo/...",
+    "estimated_size": "small",
+    "passes": false
+  },
+  {
+    "id": "2.5",
+    "phase": 2,
+    "scope": "repo",
+    "description": "Create pkg/goshared/repo/reflect.go — structToColumnsAndValues (reads db tags, skips tenant/timestamps) + field name to column mapping for UpdateFields",
+    "file": "pkg/goshared/repo/reflect.go",
+    "depends_on": ["0.2"],
+    "verify": "cd pkg/goshared && go build ./repo/...",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "2.6",
+    "phase": 2,
+    "scope": "repo",
+    "description": "Create pkg/goshared/repo/base.go — BaseRepo[R, ID] using Pool interface: GetByID, List, Create, Update, UpdateFields, SoftDelete",
+    "file": "pkg/goshared/repo/base.go",
+    "depends_on": ["2.1", "2.2", "2.4", "2.5"],
+    "verify": "cd pkg/goshared && go build ./repo/...",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "2.7",
+    "phase": 2,
+    "scope": "repo",
+    "description": "Create pkg/goshared/repo/mapped.go — MappedRepo[E, R, ID] wrapping BaseRepo with toDomain/toRow translation functions",
+    "file": "pkg/goshared/repo/mapped.go",
+    "depends_on": ["2.6"],
+    "verify": "cd pkg/goshared && go build ./repo/...",
+    "estimated_size": "medium",
+    "passes": false
+  },
+  {
+    "id": "2.8",
+    "phase": 2,
+    "scope": "test",
+    "description": "Unit tests for apperr, BaseRepo, MappedRepo, reflect utils using mock Pool — verify interface design works",
+    "file": "pkg/goshared/repo/base_test.go",
+    "depends_on": ["2.1", "2.7"],
+    "verify": "cd pkg/goshared && go test ./...",
+    "estimated_size": "medium",
+    "passes": false
+  }
+]
